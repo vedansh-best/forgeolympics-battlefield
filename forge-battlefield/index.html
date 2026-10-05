@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" class="artbg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forge Olympics · Battle for the Forge</title>
+<meta name="description" content="Live house leaderboard for the Forge Olympics at Mesa School of Business. Knights, Samurai, Gladiators and Vikings battle for glory.">
+<meta name="theme-color" content="#08060b">
+<meta property="og:title" content="Forge Olympics · Battle for the Forge">
+<meta property="og:description" content="Four houses. One battlefield. Live scores, battle reports and the war for the Forge.">
+<meta property="og:image" content="assets/logos/vikings.png">
+<link rel="icon" href="assets/logos/vikings.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="image" href="assets/battlefield-fissure.webp?v=202610031500">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Anton&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=202610031500">
+<script>
+  // Use the 3D battlefield when the device supports WebGL. Add ?no3d to the URL to force the lighter 2D version.
+  (function(){ try { var c=document.createElement('canvas');
+    if ((c.getContext('webgl2')||c.getContext('webgl')) && !/[?&]no3d/.test(location.search)) document.documentElement.classList.add('try3d');
+  } catch(e){} })();
+</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+
+<canvas id="embers" aria-hidden="true"></canvas>
+<div class="flash" id="flash" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand"><img src="assets/mesa-logo-light.png" alt="Mesa School of Business"></div>
+  <div class="top-right">
+    <button class="chip sound" id="soundBtn" type="button" aria-label="Toggle sound" title="Sound">🔈</button>
+    <div class="chip live" id="live"><i></i><span id="liveText">Loading</span></div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <img id="bgArt" class="bg-art" src="assets/battlefield-fissure.webp?v=202610031500" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+  <canvas id="fireFx" aria-hidden="true"></canvas>
+  <div id="scene3d" aria-hidden="true"></div>
+  <div class="vignette"></div>
+
+  <!-- 2D fallback scenery (hidden when the 3D battlefield is running) -->
+  <div class="sky-stars"></div>
+  <div class="moon"></div>
+  <div class="layer" style="height:58%">
+    <svg viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#2a1430" d="M0 230 L80 170 L150 205 L240 120 L320 190 L400 150 L470 200 L560 110 L650 185 L720 140 L800 195 L880 125 L960 180 L1040 135 L1120 200 L1200 150 L1290 190 L1370 130 L1440 170 L1440 400 L0 400Z"/>
+      <path fill="#160a22" d="M600 230 L600 150 L612 150 L618 110 L624 150 L640 150 L640 120 L652 70 L664 120 L664 140 L700 140 L700 60 L720 10 L740 60 L740 140 L776 140 L776 120 L788 70 L800 120 L800 150 L816 150 L822 110 L828 150 L840 150 L840 230 Z"/>
+    </svg>
+  </div>
+  <div class="fog f1"></div>
+  <div class="layer" style="height:30%">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#140a10" d="M0 90 C200 60 380 100 560 80 C760 58 900 96 1100 76 C1260 60 1360 80 1440 70 L1440 200 L0 200Z"/>
+    </svg>
+  </div>
+
+  <div class="hero-head" id="heroHead">
+    <h1 class="title" id="title" title="Double-click to replay the leader cutscene">Forge Olympics</h1>
+    <div class="headline" id="headline">⚔ The armies are gathering</div>
+    <div class="nextbattle" id="nextBattle"></div>
+  </div>
+
+  <div class="board" id="board" aria-label="House standings"></div>
+  <div class="stage" id="stage">
+    <div class="beam" id="beam" style="display:none"></div>
+    <div class="earth"></div>
+  </div>
+</section>
+
+<div class="ticker" aria-label="Latest results">
+  <div class="ticker-label">War dispatches</div>
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<main>
+  <section class="section reveal" id="council">
+    <div class="sec-head">
+      <div class="sec-kicker">State of the war</div>
+      <h2 class="sec-title">The War Council</h2>
+      <div class="divider">⚔</div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="panel territory">
+      <div class="terr-top"><h3>TERRITORY CONTROLLED</h3><p id="terrNote"></p></div>
+      <div class="terr-bar" id="terr"></div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="chronicles">
+    <div class="sec-head">
+      <div class="sec-kicker">Every battle, analysed</div>
+      <h2 class="sec-title">Battle Chronicles</h2>
+      <div class="divider">⚔</div>
+      <p class="sec-sub">Tap any battle for the full analysis: margins, placings and how much it swung the war.</p>
+    </div>
+    <div class="chron" id="chron"></div>
+  </section>
+
+  <section class="section reveal" id="warmap-sec">
+    <div class="sec-head">
+      <div class="sec-kicker">Every game, every house</div>
+      <h2 class="sec-title">The War Map</h2>
+      <div class="divider">⚔</div>
+      <p class="sec-sub">Brighter cells mean more points. The crown marks the victor of each battle.</p>
+    </div>
+    <div class="panel warmap-wrap" id="warmap"></div>
+  </section>
+
+  <section class="section reveal" id="fronts-sec">
+    <div class="sec-head">
+      <div class="sec-kicker">Who rules which arena</div>
+      <h2 class="sec-title">The Fronts</h2>
+      <div class="divider">⚔</div>
+    </div>
+    <div class="fronts" id="fronts"></div>
+  </section>
+
+  <section class="section reveal" id="rivals-sec">
+    <div class="sec-head">
+      <div class="sec-kicker">Head to head</div>
+      <h2 class="sec-title">Blood Rivalries</h2>
+      <div class="divider">⚔</div>
+      <p class="sec-sub">Read across: how many battles the row house finished above the column house.</p>
+    </div>
+    <div class="panel rival-wrap" id="rivals"></div>
+  </section>
+
+  <section class="section reveal" id="dossiers-sec">
+    <div class="sec-head">
+      <div class="sec-kicker">Know your enemy</div>
+      <h2 class="sec-title">House Dossiers</h2>
+      <div class="divider">⚔</div>
+    </div>
+    <div class="dossiers" id="dossiers"></div>
+  </section>
+
+  <section class="section reveal" id="ahead-sec">
+    <div class="sec-head">
+      <div class="sec-kicker">The war is not over</div>
+      <h2 class="sec-title">Battles Ahead</h2>
+      <div class="divider">⚔</div>
+    </div>
+    <div class="ahead-meta" id="aheadMeta"></div>
+    <div class="ahead" id="ahead"></div>
+  </section>
+
+  <footer>
+    <img src="assets/mesa-logo.png" alt="">
+    Forge Olympics · Mesa School of Business<br>
+    Scores update live from the official house sheet.
+  </footer>
+</main>
+
+<dialog class="analysis" id="modal" aria-label="Battle analysis"></dialog>
+
+<div class="cutscene" id="cutscene" aria-live="polite">
+  <div class="cs-rays"></div>
+  <div class="cs-inner">
+    <div class="cs-kick" id="csKick">The tide has turned</div>
+    <img class="cs-crest" id="csCrest" alt="">
+    <div class="cs-name" id="csName"></div>
+    <div class="cs-sub" id="csSub"></div>
+  </div>
+</div>
+
+<div class="champion" id="champion" role="dialog" aria-label="Champions">
+  <canvas id="fireworks"></canvas>
+  <div class="ch-inner" id="champInner"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js?v=202610031500"></script>
+<script src="js/audio.js?v=202610031500"></script>
+<script src="js/app.js?v=202610031500"></script>
+<script src="js/fx.js?v=202610031500"></script>
+<script src="js/board.js?v=202610031500"></script>
+<script>
+  if (document.documentElement.classList.contains('try3d') && (window.CONFIG || {}).HERO_STYLE === 'flags') {
+    import('./js/scene.js?v=202610031500').catch(function (e) {
+      console.warn('3D battlefield unavailable, using 2D version', e);
+      document.documentElement.classList.remove('try3d');
+      window.dispatchEvent(new Event('forge:no3d'));
+    });
+  }
+</script>
+</body>
+</html>
