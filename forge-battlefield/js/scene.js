@@ -923,7 +923,7 @@ function makeBanner(name) {
   const ties = [-0.4, 0, 0.4].map(() => new THREE.Mesh(new THREE.TorusGeometry(0.028, 0.009, 6, 12), ropeMat));
   const geo = new THREE.PlaneGeometry(BW, 1, 14, 30); geo.translate(0, -0.5, 0);
   geo.userData.base = Float32Array.from(geo.attributes.position.array);
-  const flag = new THREE.Mesh(geo, flagMaterial(name, 'clean')); flag.position.z = 0.27;   // hangs in front of the spear and the crossbar
+  const flag = new THREE.Mesh(geo, flagMaterial(name, 'clean')); flag.position.z = 0.075;   // just in front of the spear and crossbar, close enough that perspective keeps it centred
   if (!isMobile && WORLD) { flag.castShadow = true; flag.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: flag.material.map, alphaTest: 0.5 }); }
   const mound = makeMound();
   g.add(pole, head, ...bands, bar, finL, finR, knobL, knobR, flag, ...ties, mound); scene.add(g);
@@ -1031,10 +1031,10 @@ function updateBanner(b, dt) {
   b.pole.scale.y = b.h; b.head.position.y = b.h; b.head.scale.setScalar(hs);
   b.bands[0].position.y = b.h - 0.05 * hs; b.bands[1].position.y = barY - 0.09 * hs; b.bands.forEach(r => r.scale.setScalar(hs * 0.9));
   const half = s * BW * 0.53;
-  b.bar.scale.set(hs, half * 2, hs); b.bar.position.set(0, barY, 0.2);
-  b.knobL.position.set(-half, barY, 0.2); b.knobR.position.set(half, barY, 0.2); b.knobL.scale.setScalar(hs); b.knobR.scale.setScalar(hs);
-  b.finL.position.set(-half, barY, 0.2); b.finR.position.set(half, barY, 0.2); b.finL.scale.setScalar(hs); b.finR.scale.setScalar(hs);
-  b.ties.forEach((tie, i) => { tie.position.set((i - 1) * s * BW * 0.4, barY, 0.2); tie.scale.setScalar(s * 0.9); });
+  b.bar.scale.set(hs, half * 2, hs); b.bar.position.set(0, barY, 0.035);
+  b.knobL.position.set(-half, barY, 0.035); b.knobR.position.set(half, barY, 0.035); b.knobL.scale.setScalar(hs); b.knobR.scale.setScalar(hs);
+  b.finL.position.set(-half, barY, 0.035); b.finR.position.set(half, barY, 0.035); b.finL.scale.setScalar(hs); b.finR.scale.setScalar(hs);
+  b.ties.forEach((tie, i) => { tie.position.set((i - 1) * s * BW * 0.4, barY, 0.05); tie.scale.setScalar(s * 0.9); });
   b.flag.position.y = top; b.flag.scale.setScalar(s);
   const geo = b.flag.geometry, base = geo.userData.base, pos = geo.attributes.position.array, P = b.p, tt = t + b.ph;
   const sway = Math.sin(tt * 0.9) * 0.03 + Math.sin(tt * 2.3) * 0.012 * (P.amp / 0.06);
@@ -1044,7 +1044,7 @@ function updateBanner(b, dt) {
     const ripple = (Math.sin(ph) + Math.sin(ph * 1.7 + 1.1 + x0 * 5) * 0.35) * P.amp * v;
     pos[i] = x0 * (1 - 0.06 * Math.abs(Math.sin(ph)) * v) + sway * v * v;
     pos[i + 1] = y0 * (1 - P.lift * 0.22 * v);                 // wind lifts the cloth a little
-    pos[i + 2] = ripple + P.lift * 0.55 * v * v;                // and blows it outward
+    pos[i + 2] = ripple + P.amp * 1.4 * v + P.lift * 0.55 * v * v;   // waves forward only, never folding back through the spear
   }
   geo.attributes.position.needsUpdate = true; geo.computeVertexNormals();
 }

@@ -13,9 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preload" as="image" href="assets/battlefield-fissure.webp?v=202610031500">
+<link rel="preload" as="image" href="assets/battlefield-fissure.webp?v=202610051210">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Anton&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202610031500">
+<link rel="stylesheet" href="css/style.css?v=202610051210">
 <script>
   // Use the 3D battlefield when the device supports WebGL. Add ?no3d to the URL to force the lighter 2D version.
   (function(){ try { var c=document.createElement('canvas');
@@ -43,7 +43,7 @@
 </header>
 
 <section class="hero" id="top">
-  <img id="bgArt" class="bg-art" src="assets/battlefield-fissure.webp?v=202610031500" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+  <img id="bgArt" class="bg-art" src="assets/battlefield-fissure.webp?v=202610051210" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
   <canvas id="fireFx" aria-hidden="true"></canvas>
   <div id="scene3d" aria-hidden="true"></div>
   <div class="vignette"></div>
@@ -180,14 +180,14 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="js/config.js?v=202610031500"></script>
-<script src="js/audio.js?v=202610031500"></script>
-<script src="js/app.js?v=202610031500"></script>
-<script src="js/fx.js?v=202610031500"></script>
-<script src="js/board.js?v=202610031500"></script>
+<script src="js/config.js?v=202610051210"></script>
+<script src="js/audio.js?v=202610051210"></script>
+<script src="js/app.js?v=202610051210"></script>
+<script src="js/fx.js?v=202610051210"></script>
+<script src="js/board.js?v=202610051210"></script>
 <script>
   if (document.documentElement.classList.contains('try3d') && (window.CONFIG || {}).HERO_STYLE === 'flags') {
-    import('./js/scene.js?v=202610031500').catch(function (e) {
+    import('./js/scene.js?v=202610051210').catch(function (e) {
       console.warn('3D battlefield unavailable, using 2D version', e);
       document.documentElement.classList.remove('try3d');
       window.dispatchEvent(new Event('forge:no3d'));
